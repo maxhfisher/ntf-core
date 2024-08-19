@@ -27,6 +27,7 @@ BSLS_IDENT("$Id: $")
 #include <ntccfg_likely.h>
 #include <ntccfg_limits.h>
 #include <ntccfg_lock.h>
+#include <ntccfg_mutex.h>
 #include <ntccfg_object.h>
 #include <ntccfg_traits.h>
 #include <ntcscm_version.h>
@@ -275,6 +276,21 @@ struct Platform {
     /// Return 0 on success or a non-zero value representing the system
     /// error otherwise.
     static int getWorkingDirectory(bsl::string* result);
+
+    /// Return the handle to executable run by this process for the purposes of
+    /// dynamically loading the functions defined within in, or 0 on error.
+    static void* getDynamicObjectHandle();
+
+    /// Return the handle to the executable or dynamic shared object (DSO, 
+    /// a.k.a Dynamic Link Library or DLL) for the purposes of dynamically 
+    /// loading the functions defined within in, or 0 on error.
+    static void* getDynamicObjectHandle(const bsl::string& path);
+
+    /// Return the address of the symbol having the specified 'name' exported
+    /// by the executable or dynamic shared object (DSO, a.k.a Dynamic Link
+    /// Library or DLL) identified by the specified 'module', or 0 on error.
+    static void* getDynamicObjectFunction(void*              module, 
+                                          const bsl::string& name);
 
     /// Release the resources necessary for this library's implementation.
     /// Return 0 on success or a non-zero value representing the system

@@ -23,6 +23,7 @@ BSLS_IDENT("$Id: $")
 #include <ntccfg_platform.h>
 #include <ntci_interface.h>
 #include <ntci_reactorfactory.h>
+#include <ntcs_chronology.h>
 #include <ntcs_metrics.h>
 #include <ntcs_reactormetrics.h>
 #include <ntcs_reservation.h>
@@ -63,6 +64,7 @@ namespace ntcr {
 /// @ingroup module_ntcr
 class Interface : public ntci::Interface,
                   public ntci::ReactorPool,
+                  public ntcs::Interruptor,
                   public ntccfg::Shared<Interface>
 {
     /// Define a type alias for a map of thread handle
@@ -77,28 +79,29 @@ class Interface : public ntci::Interface,
     /// Define a type alias for a vector of reactors.
     typedef bsl::vector<bsl::shared_ptr<ntci::Reactor> > ReactorVector;
 
-    ntccfg::Object d_object;
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
 
-    mutable ntccfg::Mutex d_mutex;
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
 
-    bsl::shared_ptr<ntcs::User>     d_user_sp;
-    bsl::shared_ptr<ntci::DataPool> d_dataPool_sp;
-    bsl::shared_ptr<ntci::Resolver> d_resolver_sp;
-
-    bsl::shared_ptr<ntci::Reservation> d_connectionLimiter_sp;
-    bsl::shared_ptr<ntcs::Metrics>     d_socketMetrics_sp;
-
+    ntccfg::Object                        d_object;
+    mutable Mutex                         d_mutex;
+    bsl::shared_ptr<ntcs::User>           d_user_sp;
+    bsl::shared_ptr<ntci::DataPool>       d_dataPool_sp;
+    bsl::shared_ptr<ntci::Resolver>       d_resolver_sp;
+    bsl::shared_ptr<ntci::Reservation>    d_connectionLimiter_sp;
+    bsl::shared_ptr<ntcs::Metrics>        d_socketMetrics_sp;
+    bsl::shared_ptr<ntcs::Chronology>     d_chronology_sp;
     bsl::shared_ptr<ntci::ReactorFactory> d_reactorFactory_sp;
     bsl::shared_ptr<ntci::ReactorMetrics> d_reactorMetrics_sp;
     ReactorVector                         d_reactorVector;
-
-    ThreadVector     d_threadVector;
-    ThreadMap        d_threadMap;
-    bslmt::Semaphore d_threadSemaphore;
-    bsl::size_t      d_threadWatermark;
-
-    ntca::InterfaceConfig d_config;
-    bslma::Allocator*     d_allocator_p;
+    ThreadVector                          d_threadVector;
+    ThreadMap                             d_threadMap;
+    bslmt::Semaphore                      d_threadSemaphore;
+    bsl::size_t                           d_threadWatermark;
+    ntca::InterfaceConfig                 d_config;
+    bslma::Allocator*                     d_allocator_p;
 
   private:
     Interface(const Interface&) BSLS_KEYWORD_DELETED;
@@ -143,6 +146,20 @@ class Interface : public ntci::Interface,
     /// acquired.
     bsl::shared_ptr<ntci::Reactor> acquireReactorWithLeastLoad(
         const ntca::LoadBalancingOptions& options);
+
+    /// Unblock one waiter blocked on 'wait'.
+    void interruptOne() BSLS_KEYWORD_OVERRIDE;
+
+    /// Unblock all waiters blocked on 'wait'.
+    void interruptAll() BSLS_KEYWORD_OVERRIDE;
+
+    /// Return the handle of the thread that will be calling 'wait()', or
+    /// the default value if no such thread has been set.
+    bslmt::ThreadUtil::Handle threadHandle() const BSLS_KEYWORD_OVERRIDE;
+
+    /// Return the index of the thread that will be calling 'wait()', or
+    /// the default value if no such thread has been set.
+    bsl::size_t threadIndex() const BSLS_KEYWORD_OVERRIDE;
 
   public:
     /// Create a new interface having the specified 'configuration'.
@@ -556,6 +573,9 @@ class Interface : public ntci::Interface,
     /// Return the resolver used by this interface.
     const bsl::shared_ptr<ntci::Resolver>& resolver() const
         BSLS_KEYWORD_OVERRIDE;
+
+    /// Return the configuration. 
+    const ntca::InterfaceConfig& configuration() const BSLS_KEYWORD_OVERRIDE;
 
     /// Return true if the specified 'driverType' is supported on the
     /// current platform with the specified 'dynamicLoadBalancing' behavior,

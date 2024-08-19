@@ -196,7 +196,13 @@ struct Proactor::Work : public ntccfg::Shared<Proactor::Work> {
     /// This typedef defines a queue of pending receives.
     typedef bsl::list<Receive> ReceiveQueue;
 
-    bslmt::Mutex                          d_mutex;
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
+
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
+
+    Mutex                                 d_mutex;
     ntsa::Handle                          d_handle;
     bsl::shared_ptr<ntcd::Machine>        d_machine_sp;
     bsl::shared_ptr<ntcd::Monitor>        d_monitor_sp;
@@ -324,7 +330,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
 
     bsl::shared_ptr<Work> self = this->getSelf(this);
 
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     UpdateGuard update(this);
 
@@ -356,7 +362,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
                 NTCCFG_WARNING_UNUSED(accept);
                 d_acceptQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceAccepted(
                     d_socket_sp,
                     error,
@@ -376,7 +382,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
             NTCCFG_WARNING_UNUSED(accept);
             d_acceptQueue.pop_front();
 
-            bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+            ntccfg::UnLockGuard unlock(&d_mutex);
             ntcs::Dispatch::announceAccepted(d_socket_sp,
                                              ntsa::Error(),
                                              streamSocket,
@@ -388,7 +394,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
                 NTCCFG_WARNING_UNUSED(accept);
                 d_acceptQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceAccepted(
                     d_socket_sp,
                     event.context().error(),
@@ -425,7 +431,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
             if (error) {
                 d_receiveQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceReceived(d_socket_sp,
                                                  error,
                                                  context,
@@ -436,7 +442,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
 
             d_receiveQueue.pop_front();
 
-            bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+            ntccfg::UnLockGuard unlock(&d_mutex);
             ntcs::Dispatch::announceReceived(d_socket_sp,
                                              error,
                                              context,
@@ -448,7 +454,7 @@ void Proactor::Work::processReadable(const ntca::ReactorEvent& event)
                 NTCCFG_WARNING_UNUSED(receive);
                 d_receiveQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceReceived(d_socket_sp,
                                                  event.context().error(),
                                                  ntsa::ReceiveContext(),
@@ -464,7 +470,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
 
     bsl::shared_ptr<Work> self = this->getSelf(this);
 
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     UpdateGuard update(this);
 
@@ -476,7 +482,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
             NTCCFG_WARNING_UNUSED(connect);
             d_connectQueue.pop_front();
 
-            bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+            ntccfg::UnLockGuard unlock(&d_mutex);
             ntcs::Dispatch::announceConnected(d_socket_sp,
                                               ntsa::Error(),
                                               d_socket_sp->strand());
@@ -487,7 +493,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
                 NTCCFG_WARNING_UNUSED(connect);
                 d_connectQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceConnected(d_socket_sp,
                                                   event.context().error(),
                                                   d_socket_sp->strand());
@@ -529,7 +535,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
             if (error) {
                 d_sendQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceSent(d_socket_sp,
                                              error,
                                              context,
@@ -540,7 +546,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
 
             d_sendQueue.pop_front();
 
-            bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+            ntccfg::UnLockGuard unlock(&d_mutex);
             ntcs::Dispatch::announceSent(d_socket_sp,
                                          error,
                                          context,
@@ -552,7 +558,7 @@ void Proactor::Work::processWritable(const ntca::ReactorEvent& event)
                 NTCCFG_WARNING_UNUSED(send);
                 d_sendQueue.pop_front();
 
-                bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+                ntccfg::UnLockGuard unlock(&d_mutex);
                 ntcs::Dispatch::announceSent(d_socket_sp,
                                              event.context().error(),
                                              ntsa::SendContext(),
@@ -566,7 +572,7 @@ void Proactor::Work::processError(const ntca::ReactorEvent& event)
 {
     bsl::shared_ptr<Work> self = this->getSelf(this);
 
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     UpdateGuard update(this);
 
@@ -579,7 +585,7 @@ void Proactor::Work::processError(const ntca::ReactorEvent& event)
         NTCCFG_WARNING_UNUSED(accept);
         d_acceptQueue.pop_front();
 
-        bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+        ntccfg::UnLockGuard unlock(&d_mutex);
         ntcs::Dispatch::announceAccepted(d_socket_sp,
                                          event.context().error(),
                                          bsl::shared_ptr<ntsi::StreamSocket>(),
@@ -591,7 +597,7 @@ void Proactor::Work::processError(const ntca::ReactorEvent& event)
         NTCCFG_WARNING_UNUSED(connect);
         d_connectQueue.pop_front();
 
-        bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+        ntccfg::UnLockGuard unlock(&d_mutex);
         ntcs::Dispatch::announceConnected(d_socket_sp,
                                           event.context().error(),
                                           d_socket_sp->strand());
@@ -602,7 +608,7 @@ void Proactor::Work::processError(const ntca::ReactorEvent& event)
         NTCCFG_WARNING_UNUSED(send);
         d_sendQueue.pop_front();
 
-        bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+        ntccfg::UnLockGuard unlock(&d_mutex);
         ntcs::Dispatch::announceSent(d_socket_sp,
                                      event.context().error(),
                                      ntsa::SendContext(),
@@ -614,7 +620,7 @@ void Proactor::Work::processError(const ntca::ReactorEvent& event)
         NTCCFG_WARNING_UNUSED(receive);
         d_receiveQueue.pop_front();
 
-        bslmt::UnLockGuard<bslmt::Mutex> unlock(&d_mutex);
+        ntccfg::UnLockGuard unlock(&d_mutex);
         ntcs::Dispatch::announceReceived(d_socket_sp,
                                          event.context().error(),
                                          ntsa::ReceiveContext(),
@@ -666,7 +672,7 @@ Proactor::Work::~Work()
 
 ntsa::Error Proactor::Work::showError()
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntcs::Interest interest = d_entry_sp->showErrorCallback(
         ntca::ReactorEventOptions(),
@@ -679,7 +685,7 @@ ntsa::Error Proactor::Work::showError()
 
 ntsa::Error Proactor::Work::hideError()
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntcs::Interest interest =
         d_entry_sp->hideErrorCallback(ntca::ReactorEventOptions());
@@ -689,7 +695,7 @@ ntsa::Error Proactor::Work::hideError()
 
 ntsa::Error Proactor::Work::initiateAccept()
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     if (!d_receiveQueue.empty()) {
         return ntsa::Error(ntsa::Error::e_INVALID);
@@ -716,7 +722,7 @@ ntsa::Error Proactor::Work::initiateAccept()
 
 ntsa::Error Proactor::Work::initiateConnect(const ntsa::Endpoint& endpoint)
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntsa::Error error;
 
@@ -773,7 +779,7 @@ ntsa::Error Proactor::Work::initiateConnect(const ntsa::Endpoint& endpoint)
 ntsa::Error Proactor::Work::initiateSend(const bdlbb::Blob&       data,
                                          const ntsa::SendOptions& options)
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntsa::Error error;
 
@@ -803,7 +809,7 @@ ntsa::Error Proactor::Work::initiateSend(const bdlbb::Blob&       data,
 ntsa::Error Proactor::Work::initiateSend(const ntsa::Data&        data,
                                          const ntsa::SendOptions& options)
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntsa::Error error;
 
@@ -834,7 +840,7 @@ ntsa::Error Proactor::Work::initiateReceive(
     bdlbb::Blob*                data,
     const ntsa::ReceiveOptions& options)
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     ntsa::Error error;
 
@@ -884,7 +890,7 @@ ntsa::Error Proactor::Work::shutdown(ntsa::ShutdownType::Value direction)
 
 ntsa::Error Proactor::Work::cancel()
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_mutex);
+    LockGuard lock(&d_mutex);
 
     d_acceptQueue.clear();
     d_connectQueue.clear();
@@ -930,6 +936,10 @@ void Proactor::initialize()
         d_config.setMinThreads(d_config.maxThreads().value());
     }
 
+    if (d_config.maxThreads().value() > 1) {
+        d_dynamic = true;
+    }
+
     BSLS_ASSERT(d_config.minThreads().value() <=
                 d_config.maxThreads().value());
     BSLS_ASSERT(d_config.maxThreads().value() <= NTCCFG_DEFAULT_MAX_THREADS);
@@ -970,6 +980,13 @@ void Proactor::initialize()
         d_dataPool_sp = dataPool;
     }
 
+    d_chronology_sp.createInplace(
+        d_allocator_p,
+        bsl::shared_ptr<ntcs::Driver>(this,
+                                      bslstl::SharedPtrNilDeleter(),
+                                      d_allocator_p),
+        d_allocator_p);
+
     if (d_user_sp) {
         d_resolver_sp = d_user_sp->resolver();
     }
@@ -986,6 +1003,13 @@ void Proactor::initialize()
         d_metrics_sp = d_user_sp->proactorMetrics();
     }
 
+    if (d_user_sp) {
+        bsl::shared_ptr<ntci::Chronology> chronology = d_user_sp->chronology();
+        if (chronology) {
+            d_chronology_sp->setParent(chronology);
+        }
+    }
+
     d_monitor_sp = d_machine_sp->createMonitor(d_allocator_p);
 
     const ntca::ReactorEventTrigger::Value trigger =
@@ -995,13 +1019,6 @@ void Proactor::initialize()
 
     d_monitor_sp->setTrigger(trigger);
     d_monitor_sp->setOneShot(oneShot);
-
-    d_chronology_sp.createInplace(
-        d_allocator_p,
-        bsl::shared_ptr<ntcs::Driver>(this,
-                                      bslstl::SharedPtrNilDeleter(),
-                                      d_allocator_p),
-        d_allocator_p);
 
 #if NTCCFG_PLATFORM_COMPILER_SUPPORTS_LAMDAS
     d_detachFunctor_sp.createInplace(d_allocator_p, [this](const auto& entry) {
@@ -1022,7 +1039,7 @@ void Proactor::initialize()
 void Proactor::flush()
 {
     while (d_chronology_sp->hasAnyScheduledOrDeferred()) {
-        d_chronology_sp->announce();
+        d_chronology_sp->announce(d_dynamic);
     }
 }
 
@@ -1100,6 +1117,7 @@ Proactor::Proactor(const ntca::ProactorConfig&        configuration,
 , d_workMap(basicAllocator)
 , d_threadHandle(bslmt::ThreadUtil::invalidHandle())
 , d_threadIndex(0)
+, d_dynamic(false)
 , d_load(0)
 , d_run(true)
 , d_config(configuration, basicAllocator)
@@ -1131,6 +1149,7 @@ Proactor::Proactor(const ntca::ProactorConfig&           configuration,
 , d_waiterSet(basicAllocator)
 , d_threadHandle(bslmt::ThreadUtil::invalidHandle())
 , d_threadIndex(0)
+, d_dynamic(false)
 , d_load(0)
 , d_run(true)
 , d_config(configuration, basicAllocator)
@@ -1222,7 +1241,7 @@ ntci::Waiter Proactor::registerWaiter(const ntca::WaiterOptions& waiterOptions)
     result->d_options = waiterOptions;
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_waiterSetMutex);
+        LockGuard lockGuard(&d_waiterSetMutex);
 
         if (result->d_options.threadHandle() == bslmt::ThreadUtil::Handle()) {
             result->d_options.setThreadHandle(bslmt::ThreadUtil::self());
@@ -1278,7 +1297,7 @@ void Proactor::deregisterWaiter(ntci::Waiter waiter)
     bool flush = false;
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_waiterSetMutex);
+        LockGuard lockGuard(&d_waiterSetMutex);
 
         bsl::size_t n = d_waiterSet.erase(result);
         BSLS_ASSERT_OPT(n == 1);
@@ -1347,7 +1366,7 @@ ntsa::Error Proactor::attachSocket(
 
     bsl::shared_ptr<Work> work;
     {
-        bslmt::LockGuard<bslmt::Mutex> lock(&d_workMapMutex);
+        LockGuard lock(&d_workMapMutex);
 
         WorkMap::iterator it = d_workMap.find(handle);
         if (it != d_workMap.end()) {
@@ -1476,7 +1495,7 @@ ntsa::Error Proactor::detachSocket(
     ntsa::Handle handle = socket->handle();
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lock(&d_workMapMutex);
+        LockGuard lock(&d_workMapMutex);
 
         WorkMap::iterator it = d_workMap.find(handle);
         if (it == d_workMap.end()) {
@@ -1524,7 +1543,7 @@ ntsa::Error Proactor::removeDetached(
 ntsa::Error Proactor::closeAll()
 {
     {
-        bslmt::LockGuard<bslmt::Mutex> lock(&d_workMapMutex);
+        LockGuard lock(&d_workMapMutex);
         d_workMap.clear();
     }
 
@@ -1678,7 +1697,7 @@ void Proactor::poll(ntci::Waiter waiter)
     bsl::size_t numCycles = d_config.maxCyclesPerWait().value();
     while (numCycles != 0) {
         if (d_chronology_sp->hasAnyScheduledOrDeferred()) {
-            d_chronology_sp->announce();
+            d_chronology_sp->announce(d_dynamic);
             --numCycles;
         }
         else {
@@ -1740,7 +1759,7 @@ void Proactor::clearSockets()
 
     entryList.clear();
 
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_workMapMutex);
+    LockGuard lock(&d_workMapMutex);
 
     for (WorkMap::iterator it = d_workMap.begin(); it != d_workMap.end(); ++it)
     {
@@ -1769,7 +1788,7 @@ void Proactor::clear()
 
     entryList.clear();
 
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_workMapMutex);
+    LockGuard lock(&d_workMapMutex);
 
     for (WorkMap::iterator it = d_workMap.begin(); it != d_workMap.end(); ++it)
     {
@@ -1782,15 +1801,13 @@ void Proactor::clear()
 
 void Proactor::execute(const Functor& functor)
 {
-    d_chronology_sp->defer(functor);
-    this->interruptAll();
+    d_chronology_sp->execute(functor);
 }
 
 void Proactor::moveAndExecute(FunctorSequence* functorSequence,
                               const Functor&   functor)
 {
-    d_chronology_sp->defer(functorSequence, functor);
-    this->interruptAll();
+    d_chronology_sp->moveAndExecute(functorSequence, functor);
 }
 
 bsl::shared_ptr<ntci::Timer> Proactor::createTimer(
@@ -1890,19 +1907,19 @@ bsl::size_t Proactor::load() const
 
 bslmt::ThreadUtil::Handle Proactor::threadHandle() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_threadHandle;
 }
 
 bsl::size_t Proactor::threadIndex() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_threadIndex;
 }
 
 bsl::size_t Proactor::numWaiters() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_waiterSet.size();
 }
 

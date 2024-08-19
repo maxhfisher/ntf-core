@@ -51,7 +51,7 @@ namespace ntsf {
 namespace {
 
 bslma::Allocator*    s_globalAllocator_p;
-bslmt::Mutex*        s_globalMutex_p;
+ntscfg::Mutex*       s_globalMutex_p;
 ntsi::Resolver*      s_globalResolver_p;
 bslma::SharedPtrRep* s_globalResolverRep_p;
 
@@ -73,7 +73,7 @@ ntsa::Error System::initialize()
 
         s_globalAllocator_p = &bslma::NewDeleteAllocator::singleton();
 
-        s_globalMutex_p = new (*s_globalAllocator_p) bslmt::Mutex();
+        s_globalMutex_p = new (*s_globalAllocator_p) ntscfg::Mutex();
 
         bsl::atexit(&System::exit);
     }
@@ -829,6 +829,26 @@ ntsa::Error System::leaveMulticastGroup(ntsa::Handle           socket,
                                                        group);
 }
 
+ntsa::Error System::joinMulticastGroupSource(
+    ntsa::Handle           socket,
+    const ntsa::IpAddress& interface,
+    const ntsa::IpAddress& group,
+    const ntsa::IpAddress& source)
+{
+    return ntsu::SocketOptionUtil::joinMulticastGroupSource(
+        socket, interface, group, source);
+}
+
+ntsa::Error System::leaveMulticastGroupSource(
+    ntsa::Handle           socket,
+    const ntsa::IpAddress& interface,
+    const ntsa::IpAddress& group,
+    const ntsa::IpAddress& source)
+{
+    return ntsu::SocketOptionUtil::leaveMulticastGroupSource(
+        socket, interface, group, source);
+}
+
 ntsa::Error System::setBlocking(ntsa::Handle socket, bool blocking)
 {
     return ntsu::SocketOptionUtil::setBlocking(socket, blocking);
@@ -1207,7 +1227,7 @@ void System::setDefault(const bsl::shared_ptr<ntsi::Resolver>& resolver)
 
     bsl::shared_ptr<ntsi::Resolver> result;
 
-    bslmt::LockGuard<bslmt::Mutex> lock(s_globalMutex_p);
+    ntscfg::LockGuard lock(s_globalMutex_p);
 
     if (s_globalResolver_p != 0) {
         BSLS_ASSERT_OPT(s_globalResolverRep_p);
@@ -1242,7 +1262,7 @@ void System::getDefault(bsl::shared_ptr<ntsi::Resolver>* result)
     error = ntsf::System::initialize();
     BSLS_ASSERT_OPT(!error);
 
-    bslmt::LockGuard<bslmt::Mutex> lock(s_globalMutex_p);
+    ntscfg::LockGuard lock(s_globalMutex_p);
 
     if (NTSCFG_UNLIKELY(s_globalResolver_p == 0)) {
         BSLS_ASSERT_OPT(s_globalAllocator_p);

@@ -77,7 +77,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'manager' the closure of the specified
     /// 'socket'. If the specified 'defer' flag is false and the
@@ -99,7 +99,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// flow control has been relaxed. If the specified 'defer' flag is
@@ -122,7 +122,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// flow control has been applied. If the specified 'defer' flag is
@@ -145,7 +145,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the read queue is greater than or equal to
@@ -169,7 +169,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the read queue is greater than the read
@@ -193,7 +193,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the read queue has been discarded because
@@ -218,7 +218,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// rate limit has been reached. If the specified 'defer' flag is
@@ -241,7 +241,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// rate limit timer has fired. If the specified 'defer' flag is
@@ -264,7 +264,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// flow control has been relaxed. If the specified 'defer' flag is
@@ -287,7 +287,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// flow control has been applied. If the specified 'defer' flag is
@@ -310,7 +310,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the write queue is less than or equal to
@@ -334,7 +334,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the write queue is greater than the write
@@ -358,7 +358,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the  condition of the specified
     /// 'socket' that the write queue has been discarded because
@@ -383,7 +383,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// rate limit has been reached. If the specified 'defer' flag is
@@ -406,7 +406,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// rate limit timer has fired. If the specified 'defer' flag is
@@ -429,7 +429,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the initiation of the shutdown
     /// sequence of the specified 'socket' from the specified 'origin'. If
@@ -453,7 +453,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for reading. If the specified 'defer' flag is false and
@@ -476,7 +476,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for writing. If the specified 'defer' flag is false and
@@ -499,7 +499,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the shutdown sequence of the
     /// specified 'socket' has completed. If the specified 'defer' flag is
@@ -522,7 +522,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the detection of an error for
     /// the specified 'socket'. If the specified 'defer' flag is false and
@@ -545,7 +545,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     // *** Listener Socket ***
 
@@ -569,7 +569,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'manager' the closure of the specified
     /// 'socket'. If the specified 'defer' flag is false and the
@@ -591,7 +591,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that accept queue
     /// flow control has been relaxed. If the specified 'defer' flag is
@@ -614,7 +614,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that accept queue
     /// flow control has been applied. If the specified 'defer' flag is
@@ -637,7 +637,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the accept queue is greater than or equal
@@ -661,7 +661,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the accept queue is greater than the read
@@ -685,7 +685,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the accept queue has been discarded because
@@ -710,7 +710,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that acccept queue
     /// rate limit has been reached. If the specified 'defer' flag is
@@ -733,7 +733,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the condition that accept queue
     /// rate limit timer has fired. If the specified 'defer' flag is
@@ -756,7 +756,29 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
+
+    /// Announce to the specified 'manager' the specified 'socket' rejected
+    /// the connection. If the specified 'defer' flag is
+    /// false and the requirements of the specified 'destination' strand
+    /// permits the announcement to be executed immediately by the specified
+    /// 'source' strand, unlock the specified 'mutex', execute the
+    /// announcement, then relock the 'mutex'. Otherwise, enqueue the
+    /// announcement to be executed on the 'destination' strand, if not
+    /// null, or by the specified 'executor' otherwise. The behavior is
+    /// undefined if 'mutex' is null or not locked. The behavior is *not*
+    /// undefined if either the 'destination' strand is null or the 'source'
+    /// strand is null; a null 'destination' strand indicates the
+    /// announcement may be invoked on any strand by any thread; a null
+    /// 'source' strand indicates the source strand is unknown.
+    static void announceConnectionLimit(
+        const bsl::shared_ptr<ntci::ListenerSocketManager>& manager,
+        const bsl::shared_ptr<ntci::ListenerSocket>&        socket,
+        const bsl::shared_ptr<ntci::Strand>&                destination,
+        const bsl::shared_ptr<ntci::Strand>&                source,
+        const bsl::shared_ptr<ntci::Executor>&              executor,
+        bool                                                defer,
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the initiation of the shutdown
     /// sequence of the specified 'socket' from the specified 'origin'. If
@@ -780,7 +802,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for reading. If the specified 'defer' flag is false and
@@ -803,7 +825,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for writing. If the specified 'defer' flag is false and
@@ -826,7 +848,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the shutdown sequence of the
     /// specified 'socket' has completed. If the specified 'defer' flag is
@@ -849,7 +871,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     /// Announce to the specified 'session' the detection of an error for
     /// the specified 'socket'. If the specified 'defer' flag is false and
@@ -872,7 +894,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&                source,
         const bsl::shared_ptr<ntci::Executor>&              executor,
         bool                                                defer,
-        bslmt::Mutex*                                       mutex);
+        ntccfg::Mutex*                                      mutex);
 
     // *** Stream Socket ***
 
@@ -896,7 +918,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'manager' the closure of the specified
     /// 'socket'. If the specified 'defer' flag is false and the
@@ -918,7 +940,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// flow control has been relaxed. If the specified 'defer' flag is
@@ -941,7 +963,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// flow control has been applied. If the specified 'defer' flag is
@@ -964,7 +986,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the read queue is greater than or equal to
@@ -988,7 +1010,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the read queue is greater than the read
@@ -1012,7 +1034,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the read queue has been discarded because
@@ -1037,7 +1059,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// rate limit has been reached. If the specified 'defer' flag is
@@ -1060,7 +1082,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that read queue
     /// rate limit timer has fired. If the specified 'defer' flag is
@@ -1083,7 +1105,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// flow control has been relaxed. If the specified 'defer' flag is
@@ -1106,7 +1128,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// flow control has been applied. If the specified 'defer' flag is
@@ -1129,7 +1151,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the write queue is less than or equal to
@@ -1153,7 +1175,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition of the specified
     /// 'socket' that the size of the write queue is greater than the write
@@ -1177,7 +1199,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the  condition of the specified
     /// 'socket' that the write queue has been discarded because
@@ -1202,7 +1224,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// rate limit has been reached. If the specified 'defer' flag is
@@ -1225,7 +1247,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the condition that write queue
     /// rate limit timer has fired. If the specified 'defer' flag is
@@ -1248,7 +1270,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the initiation of a downgrade of
     /// the specified 'socket' from encrypted to unencrypted communication.
@@ -1272,7 +1294,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the initiation of a downgrade of
     /// the specified 'socket' from encrypted to unencrypted communication.
@@ -1296,7 +1318,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the initiation of the shutdown
     /// sequence of the specified 'socket' from the specified 'origin'. If
@@ -1320,7 +1342,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for reading. If the specified 'defer' flag is false and
@@ -1343,7 +1365,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' that the specified 'socket' is
     /// shut down for writing. If the specified 'defer' flag is false and
@@ -1366,7 +1388,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the shutdown sequence of the
     /// specified 'socket' has completed. If the specified 'defer' flag is
@@ -1389,7 +1411,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     /// Announce to the specified 'session' the detection of an error for
     /// the specified 'socket'. If the specified 'defer' flag is false and
@@ -1412,7 +1434,7 @@ struct Dispatch {
         const bsl::shared_ptr<ntci::Strand>&              source,
         const bsl::shared_ptr<ntci::Executor>&            executor,
         bool                                              defer,
-        bslmt::Mutex*                                     mutex);
+        ntccfg::Mutex*                                    mutex);
 
     // *** Reactor Socket ***
 

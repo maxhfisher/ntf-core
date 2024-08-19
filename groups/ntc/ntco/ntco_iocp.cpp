@@ -241,6 +241,12 @@ class Iocp : public ntci::Proactor,
     // Define a type alias for a map of proactive handles
     // to descriptors.
 
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
+
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
+
     struct Result;
     // This struct describes the context of a waiter.
 
@@ -265,13 +271,14 @@ class Iocp : public ntci::Proactor,
     bsl::shared_ptr<ntci::Resolver>        d_resolver_sp;
     bsl::shared_ptr<ntci::Reservation>     d_connectionLimiter_sp;
     bsl::shared_ptr<ntci::ProactorMetrics> d_metrics_sp;
-    mutable bslmt::Mutex                   d_proactorSocketMapMutex;
+    mutable Mutex                          d_proactorSocketMapMutex;
     ProactorSocketMap                      d_proactorSocketMap;
-    mutable bslmt::Mutex                   d_waiterSetMutex;
+    mutable Mutex                          d_waiterSetMutex;
     WaiterSet                              d_waiterSet;
     bslmt::ThreadUtil::Handle              d_threadHandle;
     bsl::size_t                            d_threadIndex;
     bsls::AtomicUint64                     d_threadId;
+    bool                                   d_dynamic;
     bsls::AtomicUint64                     d_load;
     bsls::AtomicBool                       d_run;
     ntca::ProactorConfig                   d_config;
@@ -684,7 +691,7 @@ void Iocp::flush()
     ntsa::Error error;
 
     if (d_chronology.hasAnyScheduledOrDeferred()) {
-        d_chronology.announce();
+        d_chronology.announce(d_dynamic);
     }
 
     while (true) {
@@ -747,7 +754,7 @@ void Iocp::flush()
 
     if (d_chronology.hasAnyScheduledOrDeferred()) {
         do {
-            d_chronology.announce();
+            d_chronology.announce(d_dynamic);
         } while (d_chronology.hasAnyDeferred());
     }
 }
@@ -1095,6 +1102,7 @@ Iocp::Iocp(const ntca::ProactorConfig&        configuration,
 , d_threadHandle(bslmt::ThreadUtil::invalidHandle())
 , d_threadIndex(0)
 , d_threadId(0)
+, d_dynamic(false)
 , d_load(0)
 , d_run(true)
 , d_config(configuration, basicAllocator)
@@ -1129,6 +1137,10 @@ Iocp::Iocp(const ntca::ProactorConfig&        configuration,
 
     if (d_config.minThreads().value() > d_config.maxThreads().value()) {
         d_config.setMinThreads(d_config.maxThreads().value());
+    }
+
+    if (d_config.maxThreads().value() > 1) {
+        d_dynamic = true;
     }
 
     BSLS_ASSERT(d_config.minThreads().value() <=
@@ -1197,6 +1209,13 @@ Iocp::Iocp(const ntca::ProactorConfig&        configuration,
         d_metrics_sp = d_user_sp->proactorMetrics();
     }
 
+    if (d_user_sp) {
+        bsl::shared_ptr<ntci::Chronology> chronology = d_user_sp->chronology();
+        if (chronology) {
+            d_chronology.setParent(chronology);
+        }
+    }
+
     d_completionPort = CreateIoCompletionPort(
         INVALID_HANDLE_VALUE,
         0,
@@ -1230,7 +1249,7 @@ ntci::Waiter Iocp::registerWaiter(const ntca::WaiterOptions& waiterOptions)
     bdlb::NullableValue<bslmt::ThreadUtil::Handle> principleThreadHandle;
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_waiterSetMutex);
+        LockGuard lockGuard(&d_waiterSetMutex);
 
         if (result->d_options.threadHandle() == bslmt::ThreadUtil::Handle()) {
             result->d_options.setThreadHandle(bslmt::ThreadUtil::self());
@@ -1289,7 +1308,7 @@ void Iocp::deregisterWaiter(ntci::Waiter waiter)
     bool nowEmpty = false;
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_waiterSetMutex);
+        LockGuard lockGuard(&d_waiterSetMutex);
 
         bsl::size_t n = d_waiterSet.erase(result);
         BSLS_ASSERT_OPT(n == 1);
@@ -1343,7 +1362,7 @@ ntsa::Error Iocp::attachSocket(
     }
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+        LockGuard lockGuard(&d_proactorSocketMapMutex);
 
         bsl::pair<ProactorSocketMap::iterator, bool> insertResult =
             d_proactorSocketMap.insert(
@@ -2447,7 +2466,7 @@ ntsa::Error Iocp::detachSocket(
     this->cancel(socket);
 
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+        LockGuard lockGuard(&d_proactorSocketMapMutex);
 
         bsl::size_t n = d_proactorSocketMap.erase(socket->handle());
         if (n == 0) {
@@ -2476,7 +2495,7 @@ ntsa::Error Iocp::closeAll()
 {
     ProactorSocketMap proactorSocketMap;
     {
-        bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+        LockGuard lockGuard(&d_proactorSocketMapMutex);
         proactorSocketMap = d_proactorSocketMap;
     }
 
@@ -2523,7 +2542,7 @@ void Iocp::run(ntci::Waiter waiter)
         bsl::size_t numCycles = d_config.maxCyclesPerWait().value();
         while (numCycles != 0) {
             if (d_chronology.hasAnyScheduledOrDeferred()) {
-                d_chronology.announce();
+                d_chronology.announce(d_dynamic);
                 --numCycles;
             }
             else {
@@ -2545,7 +2564,7 @@ void Iocp::poll(ntci::Waiter waiter)
     bsl::size_t numCycles = d_config.maxCyclesPerWait().value();
     while (numCycles != 0) {
         if (d_chronology.hasAnyScheduledOrDeferred()) {
-            d_chronology.announce();
+            d_chronology.announce(d_dynamic);
             --numCycles;
         }
         else {
@@ -2585,7 +2604,7 @@ void Iocp::interruptAll()
     else {
         bsl::size_t numWaiters;
         {
-            bslmt::LockGuard<bslmt::Mutex> guard(&d_waiterSetMutex);
+            LockGuard guard(&d_waiterSetMutex);
             numWaiters = d_waiterSet.size();
         }
 
@@ -2629,7 +2648,7 @@ void Iocp::clearTimers()
 
 void Iocp::clearSockets()
 {
-    bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+    LockGuard lockGuard(&d_proactorSocketMapMutex);
     d_proactorSocketMap.clear();
 }
 
@@ -2637,21 +2656,19 @@ void Iocp::clear()
 {
     d_chronology.clear();
 
-    bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+    LockGuard lockGuard(&d_proactorSocketMapMutex);
     d_proactorSocketMap.clear();
 }
 
 void Iocp::execute(const Functor& functor)
 {
-    d_chronology.defer(functor);
-    this->interruptAll();
+    d_chronology.execute(functor);
 }
 
 void Iocp::moveAndExecute(FunctorSequence* functorSequence,
                           const Functor&   functor)
 {
-    d_chronology.defer(functorSequence, functor);
-    this->interruptAll();
+    d_chronology.moveAndExecute(functorSequence, functor);
 }
 
 bsl::shared_ptr<ntci::Timer> Iocp::createTimer(
@@ -2765,7 +2782,7 @@ void Iocp::createOutgoingBlobBuffer(bdlbb::BlobBuffer* blobBuffer)
 
 bsl::size_t Iocp::numSockets() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lockGuard(&d_proactorSocketMapMutex);
+    LockGuard lockGuard(&d_proactorSocketMapMutex);
     return d_proactorSocketMap.size();
 }
 
@@ -2791,19 +2808,19 @@ bsl::size_t Iocp::load() const
 
 bslmt::ThreadUtil::Handle Iocp::threadHandle() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_threadHandle;
 }
 
 bsl::size_t Iocp::threadIndex() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_threadIndex;
 }
 
 bsl::size_t Iocp::numWaiters() const
 {
-    bslmt::LockGuard<bslmt::Mutex> lock(&d_waiterSetMutex);
+    LockGuard lock(&d_waiterSetMutex);
     return d_waiterSet.size();
 }
 

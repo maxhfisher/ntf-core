@@ -83,8 +83,14 @@ class StreamSocket : public ntci::StreamSocket,
     /// buffer factory.
     typedef bsl::shared_ptr<bdlbb::BlobBufferFactory> BlobBufferFactoryPtr;
 
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
+
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
+
     ntccfg::Object                             d_object;
-    mutable bslmt::Mutex                       d_mutex;
+    mutable Mutex                              d_mutex;
     ntsa::Handle                               d_systemHandle;
     ntsa::Handle                               d_publicHandle;
     ntsa::Transport::Value                     d_transport;
@@ -522,8 +528,7 @@ class StreamSocket : public ntci::StreamSocket,
     void privateRetryConnect(const bsl::shared_ptr<StreamSocket>& self);
 
     /// Retry connecting to the remote name. Return the error.
-    ntsa::Error privateRetryConnectToName(
-        const bsl::shared_ptr<StreamSocket>& self);
+    ntsa::Error privateRetryConnectToName();
 
     /// Retry connecting to the remote endpoint. Return the error.
     ntsa::Error privateRetryConnectToEndpoint(

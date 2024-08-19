@@ -21,6 +21,10 @@ BSLS_IDENT_RCSID(ntcs_driver_cpp, "$Id$ $CSID$")
 namespace BloombergLP {
 namespace ntcs {
 
+Interruptor::~Interruptor()
+{
+}
+
 Driver::~Driver()
 {
 }

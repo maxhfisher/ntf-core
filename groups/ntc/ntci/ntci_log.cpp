@@ -34,7 +34,7 @@ BSLS_IDENT_RCSID(ntci_log_cpp, "$Id$ $CSID$")
 #include <bsl_limits.h>
 #include <bsl_sstream.h>
 
-#define NTCI_LOG_UNSET_CONTEXT 1
+#define NTCI_LOG_UNSET_CONTEXT 0
 
 // Define to 1 to use 'vsprintf'. Uncomment, undefine or set to zero to use
 // the custom formatting functions.
@@ -76,7 +76,13 @@ struct LogJournal {
         d_records.resize(k_MAX_LOG_RECORDS);
     }
 
-    bslmt::Mutex           d_mutex;
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
+
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
+
+    Mutex                  d_mutex;
     bsl::vector<LogRecord> d_records;
     int                    d_position;
     bslma::Allocator*      d_allocator_p;

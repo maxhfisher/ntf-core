@@ -268,7 +268,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
                 reinterpret_cast<struct sockaddr_in*>(
                     interfaceAddress->ifa_addr);
 
-            BSLS_ASSERT(socketAddressIpv4->sin_family = AF_INET);
+            BSLS_ASSERT(AF_INET == socketAddressIpv4->sin_family);
 
             ntsa::Ipv4Address ipv4Address;
             ipv4Address.copyFrom(&socketAddressIpv4->sin_addr,
@@ -281,7 +281,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
                 reinterpret_cast<struct sockaddr_in6*>(
                     interfaceAddress->ifa_addr);
 
-            BSLS_ASSERT(socketAddressIpv6->sin6_family = AF_INET6);
+            BSLS_ASSERT(AF_INET6 == socketAddressIpv6->sin6_family);
 
             ntsa::Ipv6Address ipv6Address;
             ipv6Address.copyFrom(&socketAddressIpv6->sin6_addr,
@@ -465,7 +465,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
             struct sockaddr_in* socketAddressIpv4 =
                 reinterpret_cast<struct sockaddr_in*>(&ifr->ifr_addr);
 
-            BSLS_ASSERT(socketAddressIpv4->sin_family = AF_INET);
+            BSLS_ASSERT(AF_INET == socketAddressIpv4->sin_family);
 
             ntsa::Ipv4Address ipv4Address;
             ipv4Address.copyFrom(&socketAddressIpv4->sin_addr,
@@ -498,7 +498,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
             struct sockaddr_in6* socketAddressIpv6 =
                 reinterpret_cast<struct sockaddr_in6*>(&ifr->ifr_addr);
 
-            BSLS_ASSERT(socketAddressIpv6->sin6_family = AF_INET6);
+            BSLS_ASSERT(AF_INET6 == socketAddressIpv6->sin6_family);
 
             ntsa::Ipv6Address ipv6Address;
             ipv6Address.copyFrom(&socketAddressIpv6->sin6_addr,
@@ -748,7 +748,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
                     reinterpret_cast<struct sockaddr_in*>(
                         unicast->Address.lpSockaddr);
 
-                BSLS_ASSERT(socketAddressIpv4->sin_family = AF_INET);
+                BSLS_ASSERT(AF_INET == socketAddressIpv4->sin_family);
 
                 ntsa::Ipv4Address ipv4Address;
                 ipv4Address.copyFrom(&socketAddressIpv4->sin_addr,
@@ -766,7 +766,7 @@ void AdapterUtil::discoverAdapterList(bsl::vector<ntsa::Adapter>* result)
                     reinterpret_cast<struct sockaddr_in6*>(
                         unicast->Address.lpSockaddr);
 
-                BSLS_ASSERT(socketAddressIpv6->sin6_family = AF_INET6);
+                BSLS_ASSERT(AF_INET6 == socketAddressIpv6->sin6_family);
 
                 ntsa::Ipv6Address ipv6Address;
                 ipv6Address.copyFrom(&socketAddressIpv6->sin6_addr,
@@ -847,6 +847,44 @@ bool AdapterUtil::discoverAdapter(ntsa::Adapter*             result,
     }
 
     return false;
+}
+
+bsl::uint32_t AdapterUtil::discoverInterfaceIndex(
+    const ntsa::IpAddress& address)
+{
+    if (address.isV4()) {
+        return AdapterUtil::discoverInterfaceIndex(address.v4());
+    }
+    else if (address.isV6()) {
+        return AdapterUtil::discoverInterfaceIndex(address.v6());
+    }
+    else {
+        return 0;
+    }
+}
+
+bsl::uint32_t AdapterUtil::discoverInterfaceIndex(
+    const ntsa::Ipv4Address& address)
+{
+    bsl::uint32_t interfaceIndex = 0;
+
+    bsl::vector<ntsa::Adapter> adapters;
+    ntsu::AdapterUtil::discoverAdapterList(&adapters);
+
+    for (bsl::vector<ntsa::Adapter>::const_iterator it = adapters.begin();
+         it != adapters.end();
+         ++it)
+    {
+        const ntsa::Adapter& adapter = *it;
+        if (!adapter.ipv4Address().isNull()) {
+            if (adapter.ipv4Address().value() == address) {
+                interfaceIndex = adapter.index();
+                break;
+            }
+        }
+    }
+
+    return interfaceIndex;
 }
 
 bsl::uint32_t AdapterUtil::discoverInterfaceIndex(

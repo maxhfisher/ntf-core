@@ -121,11 +121,17 @@ class AsyncStrand : public ntci::Strand, public ntccfg::Shared<AsyncStrand>
     /// execute on this thread.
     typedef ntci::Executor::FunctorSequence FunctorQueue;
 
-    ntccfg::Object        d_object;
-    mutable ntccfg::Mutex d_functorQueueMutex;
-    FunctorQueue          d_functorQueue;
-    bool                  d_pending;
-    bslma::Allocator*     d_allocator_p;
+    /// Define a type alias for a mutex.
+    typedef ntccfg::Mutex Mutex;
+
+    /// Define a type alias for a mutex lock guard.
+    typedef ntccfg::LockGuard LockGuard;
+
+    ntccfg::Object    d_object;
+    mutable Mutex     d_functorQueueMutex;
+    FunctorQueue      d_functorQueue;
+    bool              d_pending;
+    bslma::Allocator* d_allocator_p;
 
   private:
     AsyncStrand(const AsyncStrand&) BSLS_KEYWORD_DELETED;
@@ -255,6 +261,14 @@ class AsyncTimer : public ntci::Timer
     /// Return true if this timer is in one-shot mode, otherwise return
     /// false.
     bool oneShot() const BSLS_KEYWORD_OVERRIDE;
+
+    /// Return the deadline, or null if no deadline is scheduled.
+    bdlb::NullableValue<bsls::TimeInterval> deadline() const 
+    BSLS_KEYWORD_OVERRIDE;
+
+    /// Return the period, or null if the timer is not periodic.
+    bdlb::NullableValue<bsls::TimeInterval> period() const 
+    BSLS_KEYWORD_OVERRIDE;
 
     /// Return the handle of the thread that manages this socket, or
     /// the default value if no such thread has been set.
